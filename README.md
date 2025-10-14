@@ -1,4 +1,6 @@
 # What is it?
+<img width="723" height="439" alt="image" src="https://github.com/user-attachments/assets/4a16ff48-17a4-4235-8ef3-a8ba1fb1f0a6" />
+
 Simple bot that che checks the requests for users to join a telegram chat against given sources (whitelists). Those requests who is listed will be accepted automatically.
 
 ## Installation and running
