@@ -27,7 +27,7 @@ class TgBot:
 
     commands = {
         'get_whitelist':    {'args': [], 'description': 'Returns the whitelist location for current chat', 'admin': True},
-        'set_whitelist':    {'args': ['reader type', 'location', 'column=0', 'sheet=0'], 'description': 'Sets the whitelist parameters for current chat', 'admin': True},
+        'set_whitelist':    {'args': ['reader type', 'location', 'column=1', 'sheet=0'], 'description': 'Sets the whitelist parameters for current chat', 'admin': True},
         'get_option':       {'args': ['option name'], 'description': 'Get option value for current chat', 'admin': True},
         'set_option':       {'args': ['option name', 'option_value'], 'description': 'Set option value for current chat', 'admin': True},
         'list_options':     {'args': [], 'description': 'List all options', 'admin': True},
