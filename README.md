@@ -21,7 +21,7 @@ Available commands:
 
 **/get_whitelist:** Returns the whitelist location for current chat;
 
-**/set_whitelist &lt;reader type&gt; &lt;location&gt; [column=1] [sheet=0]:** Sets the whitelist parameters for current chat;
+**/set_whitelist &lt;reader type&gt; &lt;location&gt; [column=1] [sheet=0]:** Sets whitelist parameters for current chat;
 
 **/get_option &lt;option name&gt;:** Get option value for current chat;
 
