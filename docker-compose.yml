@@ -1,0 +1,13 @@
+services:
+  telegram-whitelist-bot:
+    build:
+      context: ./
+    volumes:
+      - data:/data
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - PICKLE_FILE=${PICKLE_FILE}
+      - GSA_FILE=${GSA_FILE}
+      - DEFAULT_SOURCE=${DEFAULT_SOURCE}
+volumes:
+  data:
