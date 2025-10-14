@@ -32,4 +32,4 @@ Available commands:
 **/help:** Get help.
 
 ## Supported whitelist types
-* gspread: Google Spreadsheets.
+* [gspread](https://github.com/burnash/gspread): Google Spreadsheets.
