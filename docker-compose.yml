@@ -4,6 +4,7 @@ services:
       context: ./
     volumes:
       - data:/data
+    restart: on-failure:10
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - PICKLE_FILE=${PICKLE_FILE}
