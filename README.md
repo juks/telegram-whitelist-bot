@@ -12,7 +12,7 @@ Simple bot that checks the requests for users to join a telegram chat against gi
 
 ## How to use the bot
 * Add bot to your Telegram chat;
-* Give it admin permissions;
+* Grant admin permissions to the bot;
 * Set the whilelist location.
 
 ## Supported Telegram commands
