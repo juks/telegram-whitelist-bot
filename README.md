@@ -3,7 +3,7 @@ Simple bot that che checks the requests for users to join a telegram chat agains
 
 ## Installation and running
 
-* Install Docker engine;
+* Install Docker Engine;
 * Clone the repository;
 * Copy .env.dist to .env and update your configuration
 * Execute _docker compose run --remove-orphans --build telegram-whitelist-bot_.
@@ -28,3 +28,6 @@ Available commands:
 **/list_options:** List all options
 
 **/help:** Get help
+
+## Supported whitelist types
+* gspread: Google Spreadsheets
