@@ -1,4 +1,5 @@
 .idea
+lib/__pycache__
 .venv
 .env
 *.pickle
