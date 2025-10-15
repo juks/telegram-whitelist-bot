@@ -1,7 +1,7 @@
 # What is it?
 <img width="723" height="439" alt="image" src="https://github.com/user-attachments/assets/4a16ff48-17a4-4235-8ef3-a8ba1fb1f0a6" />
 
-Simple bot that checks the requests for users to join a telegram chat against given sources (whitelists). Those requests who is listed will be accepted automatically.
+Simple bot that adds whitelist automation to Telegram chats. Those users requests who is listed in chat whitelist will be accepted automatically.
 
 ## Installation and running
 
@@ -14,6 +14,9 @@ Simple bot that checks the requests for users to join a telegram chat against gi
 * Add bot to your Telegram chat;
 * Grant admin permissions to the bot;
 * Set the whilelist location.
+* Create moderated invitation link.
+
+<img width="350" alt="image" src="https://github.com/user-attachments/assets/6bf4ebb5-969a-4841-b0a0-b74e4ade6b05" />
 
 ## Supported Telegram commands
 
