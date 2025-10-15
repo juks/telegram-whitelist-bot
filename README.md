@@ -1,7 +1,7 @@
 # What is it?
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/4a16ff48-17a4-4235-8ef3-a8ba1fb1f0a6" />
 
-Simple (bot)[https://t.me/whitelist_bouncer_bot] that adds whitelist automation to Telegram chats. Those users requests who is listed in chat whitelist will be accepted automatically.
+Simple [bot](https://t.me/whitelist_bouncer_bot) that adds whitelist automation to Telegram chats. Those users requests who is listed in chat whitelist will be accepted automatically.
 
 ## Installation and running
 
