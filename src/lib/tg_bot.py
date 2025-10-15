@@ -31,6 +31,7 @@ class TgBot:
         'get_option':       {'args': ['option name'], 'description': 'Get option value for current chat', 'admin': True},
         'set_option':       {'args': ['option name', 'option_value'], 'description': 'Set option value for current chat', 'admin': True},
         'list_options':     {'args': [], 'description': 'List all options', 'admin': True},
+        'start':            {'args': [], 'description': 'Get welcome message'},
         'help':             {'args': [], 'description': 'Get help'},
     }
 
@@ -136,9 +137,28 @@ class TgBot:
                                                  parse_mode=ParseMode.HTML
                                                  )
 
+    async def cmd_start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        start_message = "<b>Whitelist Bouncer Bot</b>\n"
+        start_message += "Simple bot that adds whitelist automation to Telegram chats. Those users requests who is listed in chat whitelist will be accepted automatically.\n\n"
+        start_message += "<b>Source and manual:</b> http://bit.ly/4o0gkji\n"
+
+        start_message += "\n" + self.help_message()
+
+        await update.effective_chat.send_message(start_message,
+                                                 parse_mode=ParseMode.HTML
+                                                 )
+
+
     async def cmd_help(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Get help"""
-        result = ''
+        help_message = self.help_message()
+
+        await update.effective_chat.send_message(help_message,
+                                                 parse_mode=ParseMode.HTML
+                                                 )
+
+    def help_message(self) -> str:
+        result = '<b>Available commands:</b>\n'
 
         for command in self.commands:
             result += f'<b>/{command}</b>'
@@ -158,9 +178,7 @@ class TgBot:
 
             result += ': ' + self.commands[command]['description'] + '\n'
 
-        await update.effective_chat.send_message('<b>Available commands:</b>\n' + result,
-                                                 parse_mode=ParseMode.HTML
-                                                 )
+        return result
 
     async def join_request(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Process join request"""
