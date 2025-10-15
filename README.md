@@ -14,6 +14,7 @@ Simple [bot](https://t.me/whitelist_bouncer_bot) that adds whitelist automation 
 * Add bot to your Telegram chat (@whitelist_bouncer_bot or an instance of your own);
 * Grant admin permissions to the bot;
 * Set the whilelist location.
+* Grant whitelist access permissions when necessary.
 * Create moderated invitation link.
 
 <img width="350" alt="image" src="https://github.com/user-attachments/assets/6bf4ebb5-969a-4841-b0a0-b74e4ade6b05" />
@@ -43,3 +44,4 @@ Example whitelist with usernames listed in column 1, sheet 0:
 ```
 /set_whitelist@whitelist_bouncer_bot gspread https://docs.google.com/spreadsheets/d/somesheetid 1 0
 ```
+To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com.
