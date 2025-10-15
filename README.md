@@ -11,7 +11,7 @@ Simple [bot](https://t.me/whitelist_bouncer_bot) that adds whitelist automation 
 * Execute _docker compose run --remove-orphans --build telegram-whitelist-bot_.
 
 ## How to use the bot
-* Add bot to your Telegram chat;
+* Add bot to your Telegram chat (@whitelist_bouncer_bot or an instance of your own);
 * Grant admin permissions to the bot;
 * Set the whilelist location.
 * Create moderated invitation link.
