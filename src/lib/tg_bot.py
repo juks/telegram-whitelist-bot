@@ -48,8 +48,9 @@ class TgBot:
         self.app = Application.builder().token(token).build()
 
         self.options = Options({
-            'enabled':      {'type': 'bool', 'description': 'Controls if the bot is active', 'default': True},
-            'delete_declined':  {'type': 'bool', 'description': 'Delete declined requests'}
+            'enabled':                      {'type': 'bool', 'description': 'Controls if the bot is active', 'default': True},
+            'delete_commands':              {'type': 'bool', 'description': 'Delete command messages', 'default': True},
+            'delete_declined_requests':     {'type': 'bool', 'description': 'Delete declined requests'},
         })
 
         if 'pickle_file' in config:
@@ -263,6 +264,9 @@ class TgBot:
         """Bot commands dispatcher"""
         user = update.effective_message.from_user
         message_text = update.effective_message.text
+        chat_id = update.effective_chat.id
+        message_id = update.effective_message.id
+
         command_with_bot_name = message_text.split(' ')[0]
         command_name = command_with_bot_name.split('@')[0][1:]
 
@@ -294,10 +298,12 @@ class TgBot:
 
         if not handler:
             await update.effective_chat.send_message(f'No handler for command {command_name}')
-            return
 
         await handler(update, context)
 
+        if self.options.get_option(chat_id, 'delete_commands'):
+            await context.bot.delete_message(chat_id, message_id)
+        return
 
     def run(self):
         """Start the bot"""
