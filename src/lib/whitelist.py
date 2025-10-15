@@ -15,8 +15,6 @@ class Whitelist:
     chats = {}
     locations = {}
 
-    google_service_account_file = None
-
     def __init__(self, config, logger):
         self.logger = logger
         self.config = config

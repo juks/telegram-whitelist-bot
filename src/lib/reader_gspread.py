@@ -1,11 +1,12 @@
 import gspread
 import re
+import os
 
 """
 Google Spreadsheets Datasource: checks telegram login against given column on given sheet of online table
 """
 
-class ReaderGspread():
+class ReaderGspread:
     reader = None
     config = {}
     sources = {}
@@ -16,6 +17,8 @@ class ReaderGspread():
 
         if 'gsa_file' not in config:
             raise Exception('No google service account file given for gspread reader')
+        elif not os.path.exists(config['gsa_file']):
+            raise Exception(f'Google service account file not found: {config['gsa_file']}')
 
         self.reader = gspread.service_account(filename=config['gsa_file'])
 
