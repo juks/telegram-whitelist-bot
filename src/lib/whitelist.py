@@ -21,7 +21,7 @@ class Whitelist:
         self.logger = logger
         self.config = config
 
-        if self.DEFAULT_SOURCE_PARAM in config and config[self.DEFAULT_SOURCE_PARAM] is not None:
+        if self.DEFAULT_SOURCE_PARAM in config and config[self.DEFAULT_SOURCE_PARAM]:
             args = config[self.DEFAULT_SOURCE_PARAM].split(',')
             self.default_reader = args[0]
             self.default_reader_params = self.parse_reader_params(self.default_reader, args)
