@@ -1,7 +1,7 @@
 # What is it?
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/4a16ff48-17a4-4235-8ef3-a8ba1fb1f0a6" />
 
-Simple bot that adds whitelist automation to Telegram chats. Those users requests who is listed in chat whitelist will be accepted automatically.
+Simple [bot](https://t.me/whitelist_bouncer_bot) that adds whitelist automation to Telegram chats. Those users requests who is listed in chat whitelist will be accepted automatically.
 
 ## Installation and running
 
@@ -11,9 +11,10 @@ Simple bot that adds whitelist automation to Telegram chats. Those users request
 * Execute _docker compose run --remove-orphans --build telegram-whitelist-bot_.
 
 ## How to use the bot
-* Add bot to your Telegram chat;
+* Add bot to your Telegram chat (@whitelist_bouncer_bot or an instance of your own);
 * Grant admin permissions to the bot;
 * Set the whilelist location.
+* Grant whitelist access permissions when necessary.
 * Create moderated invitation link.
 
 <img width="350" alt="image" src="https://github.com/user-attachments/assets/6bf4ebb5-969a-4841-b0a0-b74e4ade6b05" />
@@ -35,4 +36,12 @@ Available commands:
 **/help:** Get help.
 
 ## Supported whitelist types
-* [gspread](https://github.com/burnash/gspread): Google Spreadsheets.
+### [gspread](https://github.com/burnash/gspread): Google Spreadsheets.
+Example whitelist with usernames listed in column 1, sheet 0:
+
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/c4c6ca23-c341-4c84-b104-413d46fd13f6" />
+
+```
+/set_whitelist@whitelist_bouncer_bot gspread https://docs.google.com/spreadsheets/d/somesheetid 1 0
+```
+To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com.
