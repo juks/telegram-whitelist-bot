@@ -35,4 +35,11 @@ Available commands:
 **/help:** Get help.
 
 ## Supported whitelist types
-* [gspread](https://github.com/burnash/gspread): Google Spreadsheets.
+### [gspread](https://github.com/burnash/gspread): Google Spreadsheets.
+Example whitelist with column 1, sheet 0:
+
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/c4c6ca23-c341-4c84-b104-413d46fd13f6" />
+
+```
+/set_whitelist@whitelist_bouncer_bot gspread https://docs.google.com/spreadsheets/d/somesheetid 1 0
+```
