@@ -38,7 +38,7 @@ Available commands:
 **/help:** Get help.
 
 ## Supported whitelist types
-### [Gspread](https://github.com/burnash/gspread): Google Spreadsheets.
+### • [Gspread](https://github.com/burnash/gspread): Google Spreadsheets.
 Example whitelist with usernames listed in column 1, sheet 0:
 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/c4c6ca23-c341-4c84-b104-413d46fd13f6" />
@@ -48,7 +48,7 @@ Example whitelist with usernames listed in column 1, sheet 0:
 ```
 To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com.
 
-### File: online text file with usernames list.
+### • File: online text file with usernames list.
 ```
 /set_whitelist@whitelist_bouncer_bot file https://my.domain.com/users.txt
 ```
