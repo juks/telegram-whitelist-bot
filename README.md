@@ -25,6 +25,8 @@ Available commands:
 
 **/get_whitelist:** Returns the whitelist location for current chat;
 
+**/test_whitelist:** Get whitelist reading for first three characters of first three entries;
+
 **/set_whitelist &lt;reader type&gt; &lt;location&gt; [params]:** Sets whitelist parameters for current chat;
 
 **/get_option &lt;option name&gt;:** Get option value for current chat;
@@ -36,7 +38,7 @@ Available commands:
 **/help:** Get help.
 
 ## Supported whitelist types
-### [gspread](https://github.com/burnash/gspread): Google Spreadsheets.
+### [Gspread](https://github.com/burnash/gspread): Google Spreadsheets.
 Example whitelist with usernames listed in column 1, sheet 0:
 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/c4c6ca23-c341-4c84-b104-413d46fd13f6" />
@@ -45,3 +47,8 @@ Example whitelist with usernames listed in column 1, sheet 0:
 /set_whitelist@whitelist_bouncer_bot gspread https://docs.google.com/spreadsheets/d/somesheetid 1 0
 ```
 To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com.
+
+### File: online text file with usernames list.
+```
+/set_whitelist@whitelist_bouncer_bot file https://my.domain.com/users.txt
+```

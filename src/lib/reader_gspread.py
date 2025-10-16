@@ -26,7 +26,15 @@ class ReaderGspread:
         self.reader = gspread.service_account(filename=config['gsa_file'])
 
     async def check_allowed_user(self, location, username):
-        """Load locations"""
+        usernames = await self.read_users(location)
+
+        if username.lower() in map(lambda x: re.sub('^@', '', x.lower().strip()), usernames):
+            return True
+        else:
+            return False
+
+    async def read_users(self, location, max_count = None):
+        """Load location"""
         if location['params']['location'] not in self.sources:
             spreadsheet = self.reader.open_by_url(location['params']['location'])
 
@@ -34,11 +42,10 @@ class ReaderGspread:
 
         usernames = self.sources[location['params']['location']].col_values(location['params']['column'])
 
-        if username.lower() in map(lambda x: re.sub('^@', '', x.lower().strip()), usernames):
-            return True
+        if max_count is None:
+            return usernames
         else:
-            return False
-
+            return usernames[0:max_count]
 
     def parse_params(self, args):
         params = {}

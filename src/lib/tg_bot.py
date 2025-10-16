@@ -27,7 +27,8 @@ class TgBot:
 
     commands = {
         'get_whitelist':    {'args': [], 'description': 'Returns the whitelist location for current chat', 'admin': True},
-        'set_whitelist':    {'args': ['reader type', 'location', 'column=1', 'sheet=0'], 'description': 'Sets the whitelist parameters for current chat', 'admin': True},
+        'test_whitelist':   {'args': [], 'description': 'Get some idea of what current whitelist contains', 'admin': True},
+        'set_whitelist':    {'args': ['reader type', 'location=default', 'column=1', 'sheet=0'], 'description': 'Sets the whitelist parameters for current chat', 'admin': True},
         'get_option':       {'args': ['option name'], 'description': 'Get option value for current chat', 'admin': True},
         'set_option':       {'args': ['option name', 'option_value'], 'description': 'Set option value for current chat', 'admin': True},
         'list_options':     {'args': [], 'description': 'List all options', 'admin': True},
@@ -93,6 +94,14 @@ class TgBot:
                 await update.effective_chat.send_message(
                     f"Current whitelist is: {location['params']['location']} ({location['reader_type']})")
 
+    async def cmd_test_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Get 3 masked usernames for this chat"""
+        chat_id = update.effective_message.chat_id
+
+        entries = await self.whitelist.test(chat_id)
+
+        await update.effective_chat.send_message('Whitelist test result is: ' + ', '.join(entries))
+
     async def cmd_set_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Set data source for this chat"""
         chat_id = update.effective_message.chat_id
@@ -150,7 +159,6 @@ class TgBot:
         await update.effective_chat.send_message(start_message,
                                                  parse_mode=ParseMode.HTML
                                                  )
-
 
     async def cmd_help(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Get help"""

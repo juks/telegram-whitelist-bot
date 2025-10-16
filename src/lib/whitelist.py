@@ -59,6 +59,23 @@ class Whitelist:
 
             return location
 
+    async def test(self, chat_id):
+        """Get 3 entries from whitelist"""
+        location = self.get_whitelist_params(chat_id)
+
+        if location is None:
+            raise Exception('No whitelist for this chat')
+
+        reader = self.get_reader(location['reader_type'])
+
+        if not reader:
+            raise Exception('Unsupported reader type')
+
+        entries = await reader.read_users(location, 3)
+        entries = map(lambda x: x[0:3] + '...', entries)
+
+        return entries
+
     def set_whitelist_params(self, chat_id, args):
         """Sets whitelist location for the given chat id"""
         if len(args) < 1:
