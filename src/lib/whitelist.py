@@ -1,10 +1,12 @@
 from lib.reader_gspread import ReaderGspread
+from lib.reader_file import ReaderFile
 
 class Whitelist:
     DEFAULT_SOURCE_PARAM = 'default_source'
     DEFAULT_READER = 'default'
     READER_GSPREAD = 'gspread'
-    SUPPORTED_READERS = [DEFAULT_READER, READER_GSPREAD]
+    READER_FILE = 'file'
+    SUPPORTED_READERS = [DEFAULT_READER, READER_GSPREAD, READER_FILE]
 
     default_reader = None
     default_reader_params = None
@@ -36,6 +38,8 @@ class Whitelist:
             match reader_type:
                 case self.READER_GSPREAD:
                     self.readers[reader_type] = ReaderGspread(self.config)
+                case self.READER_FILE:
+                    self.readers[reader_type] = ReaderFile(self.config)
 
         return self.readers[reader_type]
 

@@ -88,7 +88,10 @@ class TgBot:
                     f'Current whitelist is: default')
             elif location['reader_type'] == 'gspread':
                 await update.effective_chat.send_message(
-                    f'Current whitelist is: {location['params']['location']} ({location['reader_type']}, column {location['params']['column']}, sheet {location['params']['sheet']})')
+                    f"Current whitelist is: {location['params']['location']} ({location['reader_type']}, column {location['params']['column']}, sheet {location['params']['sheet']})")
+            elif location['reader_type'] == 'file':
+                await update.effective_chat.send_message(
+                    f"Current whitelist is: {location['params']['location']} ({location['reader_type']})")
 
     async def cmd_set_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Set data source for this chat"""
