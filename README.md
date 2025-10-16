@@ -46,7 +46,10 @@ Example whitelist with usernames listed in column 1, sheet 0:
 ```
 /set_whitelist@whitelist_bouncer_bot gspread https://docs.google.com/spreadsheets/d/somesheetid 1 0
 ```
-To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com.
+To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout:
+```
+driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com
+```
 
 ### • File: online text file with usernames list
 ```
