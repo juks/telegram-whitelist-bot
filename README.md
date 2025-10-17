@@ -89,23 +89,23 @@ driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com
 ## Project structure
 ```
 telegram-whitelist-bot/
-|-- src/                                - Source code
-|   |-- data.pickle                     - Sample runtime state file for dev/testing
-|   |-- main.py                         - Entry point: parses CLI/env, starts TgBot
-|   |-- lib/                            - Core modules
-|   |   |-- envdefault.py               - argparse action to read defaults from environment
-|   |   |-- options.py                  - In-memory options storage and reference/validation
-|   |   |-- permanent.py                - Pickle-based persistence for locations/options
-|   |   |-- reader_file.py              - Reader: usernames from text file by URL
-|   |   |-- reader_gspread.py           - Reader: usernames from Google Sheets
-|   |   |-- reader_api.py               - Reader: single-user check via REST API (Bearer auth)
-|   |   |-- tg_bot.py                   - Telegram bot logic and command handlers
-|   |   `-- whitelist.py                - Reader registry, chat-to-source mapping, access checks
-|   `-- misc/                           - Auxiliary tools and test utilities
-|       `-- test_api.py                 - Minimal HTTP server to test ReaderApi
-|-- data.pickle                         - Example persisted state (locations/options)
-|-- docker-compose.yml                  - Compose file to run the bot in Docker
-|-- Dockerfile                          - Docker build definition for the bot
-|-- README.md                           - Project overview and usage instructions
-`-- requirements.txt                    - Python dependencies
+|-- src/                              - Source code
+|   |-- data.pickle                   - Sample runtime state file for dev/testing
+|   |-- main.py                       - Entry point: parses CLI/env, starts TgBot
+|   |-- lib/                          - Core modules
+|   |   |-- envdefault.py             - argparse action to read defaults from environment
+|   |   |-- options.py                - In-memory options storage and reference/validation
+|   |   |-- permanent.py              - Pickle-based persistence for locations/options
+|   |   |-- reader_file.py            - Reader: usernames from text file by URL
+|   |   |-- reader_gspread.py         - Reader: usernames from Google Sheets
+|   |   |-- reader_api.py             - Reader: single-user check via REST API (Bearer auth)
+|   |   |-- tg_bot.py                 - Telegram bot logic and command handlers
+|   |   `-- whitelist.py              - Reader registry, chat-to-source mapping, access checks
+|   `-- misc/                         - Auxiliary tools and test utilities
+|       `-- test_api.py               - Minimal HTTP server to test ReaderApi
+|-- data.pickle                       - Example persisted state (locations/options)
+|-- docker-compose.yml                - Compose file to run the bot in Docker
+|-- Dockerfile                        - Docker build definition for the bot
+|-- README.md                         - Project overview and usage instructions
+`-- requirements.txt                   - Python dependencies
 ```
