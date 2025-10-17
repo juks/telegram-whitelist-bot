@@ -88,12 +88,12 @@ class Whitelist:
             try:
                 result = await reader.check_allowed_user(location, username)
             except Exception as e:
-                return f'User {username} is not allowed: {str(e)}'
+                return f'user {username} is not allowed: {str(e)}'
 
             if not result:
-                return f'User {username} is not allowed'
+                return f'user {username} is not allowed'
             else:
-                return f'User {username} is allowed'
+                return f'user {username} is allowed'
         else:
             return ['n/a']
 
