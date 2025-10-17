@@ -55,7 +55,7 @@ class CheckUserHandler(BaseHTTPRequestHandler):
 
             normalized = username.lower().lstrip('@')
             allowed = normalized in KNOWN_USERS
-            return self._send_json(allowed)
+            return self._send_json({'result': allowed})
 
         self._send_json({'error': 'not found'}, status_code=404)
 

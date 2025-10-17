@@ -56,7 +56,7 @@ class ReaderApi:
             if isinstance(data, bool):
                 return bool(data)
             if isinstance(data, dict):
-                for key in ['allowed', 'allow', 'ok', 'in_whitelist']:
+                for key in ['result', 'allowed', 'allow', 'ok', 'in_whitelist']:
                     if key in data:
                         return bool(data[key])
         except Exception:
