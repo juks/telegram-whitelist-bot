@@ -38,7 +38,7 @@ Available commands:
 **/help:** Get help.
 
 ## Supported whitelist types
-### • api: remote api
+### • api: remote whitelist available via the HTTP(s) API
 To test the api you maay run a local web server:
 ```
 python3 src/misc/test_api.py --port 8080 --token secret123
