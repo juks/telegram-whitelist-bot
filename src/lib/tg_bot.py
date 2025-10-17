@@ -93,14 +93,21 @@ class TgBot:
             elif location['reader_type'] == 'file':
                 await update.effective_chat.send_message(
                     f"Current whitelist is: {location['params']['location']} ({location['reader_type']})")
+            elif location['reader_type'] == 'api':
+                token_note = 'with token' if 'token' in location['params'] and location['params']['token'] else 'no token'
+                await update.effective_chat.send_message(
+                    f"Current whitelist is: {location['params']['location']} ({location['reader_type']}, {token_note})")
 
     async def cmd_test_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Get 3 masked usernames for this chat"""
         chat_id = update.effective_message.chat_id
 
-        entries = await self.whitelist.test(chat_id)
+        check_result = await self.whitelist.test(chat_id)
 
-        await update.effective_chat.send_message('Whitelist test result is: ' + ', '.join(entries))
+        if isinstance(check_result, list):
+            await update.effective_chat.send_message('Whitelist test result is: ' + ', '.join(check_result))
+        else:
+            await update.effective_chat.send_message('Whitelist test result is: ' + check_result)
 
     async def cmd_set_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Set data source for this chat"""

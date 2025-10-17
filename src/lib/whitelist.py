@@ -1,12 +1,14 @@
 from lib.reader_gspread import ReaderGspread
 from lib.reader_file import ReaderFile
+from lib.reader_api import ReaderApi
 
 class Whitelist:
     DEFAULT_SOURCE_PARAM = 'default_source'
     DEFAULT_READER = 'default'
     READER_GSPREAD = 'gspread'
     READER_FILE = 'file'
-    SUPPORTED_READERS = [DEFAULT_READER, READER_GSPREAD, READER_FILE]
+    READER_API = 'api'
+    SUPPORTED_READERS = [DEFAULT_READER, READER_GSPREAD, READER_FILE, READER_API]
 
     default_reader = None
     default_reader_params = None
@@ -40,6 +42,8 @@ class Whitelist:
                     self.readers[reader_type] = ReaderGspread(self.config)
                 case self.READER_FILE:
                     self.readers[reader_type] = ReaderFile(self.config)
+                case self.READER_API:
+                    self.readers[reader_type] = ReaderApi(self.config)
 
         return self.readers[reader_type]
 
@@ -60,7 +64,7 @@ class Whitelist:
             return location
 
     async def test(self, chat_id):
-        """Get 3 entries from whitelist"""
+        """Get the result of whitelist test: 3 entries or check if user bob can access api"""
         location = self.get_whitelist_params(chat_id)
 
         if location is None:
@@ -71,10 +75,27 @@ class Whitelist:
         if not reader:
             raise Exception('Unsupported reader type')
 
-        entries = await reader.read_users(location, 3)
-        entries = map(lambda x: x[0:3] + '...', entries)
+        # If class supports getting the list of users
+        if hasattr(reader, 'read_users'):
+            entries = await reader.read_users(location, 3)
+            entries = map(lambda x: x[0:3] + '...', entries)
+            
+            return entries
+        # If class only checks single user
+        elif isinstance(reader, ReaderApi):
+            username = 'bob'
 
-        return entries
+            try:
+                result = await reader.check_allowed_user(location, username)
+            except Exception as e:
+                return f'User {username} is not allowed: {str(e)}'
+
+            if not result:
+                return f'User {username} is not allowed'
+            else:
+                return f'User {username} is allowed'
+        else:
+            return ['n/a']
 
     def set_whitelist_params(self, chat_id, args):
         """Sets whitelist location for the given chat id"""
