@@ -48,16 +48,16 @@ Then set up the reader and check whitelist test.
 
 Wrong token to see the error:
 ```
-/set_whitelist api http://localhost:8080/check-user/{username} secret12345
-/test_whitelist
+/set_whitelist@whitelist_bouncer_bot api http://localhost:8080/check-user/{username} secret12345
+/test_whitelist@whitelist_bouncer_bot
 
 Whitelist test result is: user bob is not allowed: HTTP Error 401: Unauthorized
 ```
 
 Correct token:
 ```
-/set_whitelist api http://localhost:8080/check-user/{username} secret123
-/test_whitelist
+/set_whitelist@whitelist_bouncer_bot api http://localhost:8080/check-user/{username} secret123
+/test_whitelist@whitelist_bouncer_bot
 
 Whitelist test result is: user bob is allowed
 ```
