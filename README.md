@@ -25,7 +25,7 @@ Available commands:
 
 **/get_whitelist:** Returns the whitelist location for current chat;
 
-**/test_whitelist:** Get whitelist reading for first three characters of first three entries;
+**/test_whitelist:** Get whitelist reading (check user Bob in case of API or get first three whitelist entries);
 
 **/set_whitelist &lt;reader type&gt; &lt;location&gt; [params]:** Sets whitelist parameters for current chat;
 
