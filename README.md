@@ -44,6 +44,12 @@ To test the api you may run a local web server:
 python3 src/misc/test_api.py --port 8080 --token secret123
 ```
 
+Test the server response with Curl:
+```
+$ curl -H 'Authorization: Bearer secret123' 'http://localhost:8080/check-user/JohnDoe'
+{"result": true}
+```
+
 Then set up the reader and check whitelist test.
 
 Wrong token to see the error:
