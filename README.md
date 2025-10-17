@@ -25,7 +25,7 @@ Available commands:
 
 **/get_whitelist:** Returns the whitelist location for current chat;
 
-**/test_whitelist:** Get whitelist reading for first three characters of first three entries;
+**/test_whitelist:** Get whitelist reading (check user Bob in case of API or get first three whitelist entries);
 
 **/set_whitelist &lt;reader type&gt; &lt;location&gt; [params]:** Sets whitelist parameters for current chat;
 
@@ -38,7 +38,31 @@ Available commands:
 **/help:** Get help.
 
 ## Supported whitelist types
-### • [Gspread](https://github.com/burnash/gspread): Google Spreadsheets
+### • api: remote whitelist available via the HTTP(s) API
+To test the api you may run a local web server:
+```
+python3 src/misc/test_api.py --port 8080 --token secret123
+```
+
+Then set up the reader and check whitelist test.
+
+Wrong token to see the error:
+```
+/set_whitelist@whitelist_bouncer_bot api http://localhost:8080/check-user/{username} secret12345
+/test_whitelist@whitelist_bouncer_bot
+
+Whitelist test result is: user bob is not allowed: HTTP Error 401: Unauthorized
+```
+
+Correct token:
+```
+/set_whitelist@whitelist_bouncer_bot api http://localhost:8080/check-user/{username} secret123
+/test_whitelist@whitelist_bouncer_bot
+
+Whitelist test result is: user bob is allowed
+```
+
+### • [gspread](https://github.com/burnash/gspread): Google Spreadsheets
 Example whitelist with usernames listed in column 1, sheet 0:
 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/c4c6ca23-c341-4c84-b104-413d46fd13f6" />
@@ -51,7 +75,7 @@ To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to
 driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com
 ```
 
-### • File: online text file with usernames list
+### • file: online text file with usernames list
 ```
 /set_whitelist@whitelist_bouncer_bot file https://my.domain.com/users.txt
 ```
