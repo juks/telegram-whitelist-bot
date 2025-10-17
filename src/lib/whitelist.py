@@ -78,7 +78,7 @@ class Whitelist:
         # If class supports getting the list of users
         if hasattr(reader, 'read_users'):
             entries = await reader.read_users(location, 3)
-            entries = map(lambda x: x[0:3] + '...', entries)
+            entries = list(map(lambda x: x[0:3] + '...', entries))
             
             return entries
         # If class only checks single user

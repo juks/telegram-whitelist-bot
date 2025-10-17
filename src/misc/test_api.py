@@ -14,8 +14,6 @@ Examples:
   curl 'http://localhost:8080/check-user/bob'
   curl 'http://localhost:8080/check-user?username=BillGates'
   curl -H 'Authorization: Bearer secret123' 'http://localhost:8080/check-user/JohnDoe'
-
-/set_whitelist api http://localhost:8080/check-user/{username} secret1234
 """
 
 import argparse
