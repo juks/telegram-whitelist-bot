@@ -107,5 +107,5 @@ telegram-whitelist-bot/
 |-- docker-compose.yml                - Compose file to run the bot in Docker
 |-- Dockerfile                        - Docker build definition for the bot
 |-- README.md                         - Project overview and usage instructions
-`-- requirements.txt                   - Python dependencies
+`-- requirements.txt                  - Python dependencies
 ```
