@@ -81,7 +81,7 @@ Some column conditions can be implemented using macros:
 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/2b6c099c-06a1-484d-9393-d21c9d1b2ade" />
 
-Google Spreadsheet Macros code:
+Google Spreadsheet macros code:
 ```javascript
 function Related(rowNumber = 0) {
   var spreadsheet = SpreadsheetApp.getActive();
