@@ -76,6 +76,56 @@ Example whitelist with usernames listed in column 1, sheet 0:
 ```
 /set_whitelist@whitelist_bouncer_bot gspread https://docs.google.com/spreadsheets/d/somesheetid 1 0
 ```
+
+Some column conditions can be implemented using macros:
+
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/2b6c099c-06a1-484d-9393-d21c9d1b2ade" />
+
+Google Spreadsheet Macros code:
+```javascript
+function Related(rowNumber = 0) {
+  var spreadsheet = SpreadsheetApp.getActive();
+  var sheet = spreadsheet.getActiveSheet();
+
+  loginColumn = 1;
+  conditionColumn = 2;
+  outputColumn = 3;
+  minDataRow = 2;
+
+  if (rowNumber == 0) {
+    start = 1;
+    offset = 1;
+    var dataRange = sheet.getDataRange();
+  } else if (rowNumber < minDataRow) {
+    return
+  } else {
+    start = 0;
+    offset = 0;
+    var dataRange = sheet.getRange(rowNumber, 1, 1, sheet.getLastColumn());
+  }
+
+  var values = dataRange.getValues();
+  var positive = ['yes', 'true'];
+
+  for (var i = start; i < values.length; i++) {
+    console.log(String(values[i][conditionColumn]).toLowerCase().trim());
+    if (positive.includes(String(values[i][conditionColumn - 1]).toLowerCase().trim())) {
+      newValue = values[i][loginColumn - 1].replace(/^@/, '').toLowerCase().trim();
+      sheet.getRange(i + rowNumber + offset, outputColumn).setValue(newValue);
+    } else {
+      sheet.getRange(i + rowNumber + offset, outputColumn).setValue('');
+    }
+  }
+};
+
+function onEdit(e) {
+  range = e.range;
+  rowNumber = range.getRow();
+
+  Related(rowNumber);
+};
+```
+
 To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout:
 ```
 driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com
