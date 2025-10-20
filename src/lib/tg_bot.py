@@ -218,19 +218,21 @@ class TgBot:
 
                 self.logger.info('User %s in already a sort of member of group %s', user.username, chat.title)
             elif chat_member.status in [ChatMemberStatus.BANNED]:
-                if self.options.get_option(chat.id, 'delete_declined'):
+                if self.options.get_option(chat.id, 'delete_declined_requests'):
                     await chat_join_request.decline()
 
                 self.logger.info('User %s was banned in group %s', user.username, chat.title)
             elif await self.whitelist.check_allowed_user(chat.id, user.username):
                 await chat_join_request.approve()
 
-                self.logger.info(f'Join request approved for chat %s', chat.title)
+                self.logger.info(f'Join request approved for user %s into the chat %s', user.username, chat.title)
             else:
-                if self.options.get_option(chat.id, 'delete_declined'):
-                    await chat_join_request.decline()
+                self.logger.info(f'User %s is not allowed into the group %s', user.username, chat.title)
 
-                self.logger.info('Join request declined for chat %s', chat.title)
+                if self.options.get_option(chat.id, 'delete_declined_requests'):
+                    await chat_join_request.decline()
+                    self.logger.info('Join request declined for chat %s', chat.title)
+                    
         except Exception as e:
             self.logger.error(f'Error processing join request for chat %s: %s (%s)', chat.title, str(e), type(e))
 
