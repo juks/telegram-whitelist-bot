@@ -2,7 +2,7 @@ from wsgiref.handlers import BaseHandler
 
 from lib.whitelist import Whitelist
 from lib.options import Options
-from lib.permanent import Permanent
+from lib.redis import Redis
 import logging
 from typing import Optional
 
@@ -29,6 +29,9 @@ class TgBot:
         'get_whitelist':    {'args': [], 'description': 'Returns the whitelist location for current chat', 'admin': True},
         'test_whitelist':   {'args': [], 'description': 'Get some idea of what current whitelist contains', 'admin': True},
         'set_whitelist':    {'args': ['reader type', 'location=default', 'column=1', 'sheet=0'], 'description': 'Sets the whitelist parameters for current chat', 'admin': True},
+        'set_whitelist_condition': {'args': ['condition'],
+                          'description': 'Sets the whitelist parameters for current chat (where appropriate)', 'admin': True},
+        'test_user':        {'args': ['username'], 'description': 'Check if user is allowed into chat'},
         'get_option':       {'args': ['option name'], 'description': 'Get option value for current chat', 'admin': True},
         'set_option':       {'args': ['option name', 'option_value'], 'description': 'Set option value for current chat', 'admin': True},
         'list_options':     {'args': [], 'description': 'List all options', 'admin': True},
@@ -44,7 +47,13 @@ class TgBot:
         # set higher logging level for httpx to avoid all GET and POST requests being logged
         logging.getLogger("httpx").setLevel(logging.WARNING)
         self.logger = logging.getLogger(__name__)
-        self.whitelist = Whitelist(config, self.logger)
+
+        # Initialize Redis client with parameters from config
+        redis_host = config.get('redis_host', 'localhost')
+        redis_port = config.get('redis_port', 6379)
+        redis_client = Redis(host=redis_host, port=redis_port)
+
+        self.whitelist = Whitelist(config, self.logger, redis_client=redis_client)
 
         self.token = token
         self.app = Application.builder().token(token).build()
@@ -53,18 +62,7 @@ class TgBot:
             'enabled':                      {'type': 'bool', 'description': 'Controls if the bot is active', 'default': True},
             'delete_commands':              {'type': 'bool', 'description': 'Delete command messages', 'default': True},
             'delete_declined_requests':     {'type': 'bool', 'description': 'Delete declined requests'},
-        })
-
-        if 'pickle_file' in config:
-            self.permanent = Permanent(config['pickle_file'], self.logger)
-            data = self.permanent.restore()
-
-            if data:
-                if 'locations' in data:
-                    self.whitelist.restore(data['locations'])
-
-                if 'options' in data:
-                    self.options.restore(data['options'])
+        }, redis_client=redis_client)
 
     async def is_admin(self, update: Update, user_id) -> bool:
         """Checks if a user is an administrator in the current chat."""
@@ -98,6 +96,33 @@ class TgBot:
                 await update.effective_chat.send_message(
                     f"Current whitelist is: {location['params']['location']} ({location['reader_type']}, {token_note})")
 
+    async def cmd_set_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Set data source for this chat"""
+        chat_id = update.effective_message.chat_id
+
+        try:
+            self.whitelist.set_whitelist_params(chat_id, context.args)
+
+            await update.effective_chat.send_message('Setting new whitelist')
+        except Exception as e:
+            await update.effective_chat.send_message(f'Error setting new whitelist: {str(e)} ({type(e)})')
+
+    async def cmd_test_user(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Test if user with given username is allowed"""
+        chat_id = update.effective_message.chat_id
+
+        try:
+            result = await self.whitelist.check_allowed_user(chat_id, context.args[0])
+
+            if result:
+                await update.effective_chat.send_message(f'User {context.args[0]} is allowed')
+            else:
+                await update.effective_chat.send_message(f'User {context.args[0]} is not allowed')
+
+        except Exception as e:
+            await update.effective_chat.send_message(f'Error checking user: {str(e)} ({type(e)})')
+
+
     async def cmd_test_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Get 3 masked usernames for this chat"""
         chat_id = update.effective_message.chat_id
@@ -109,19 +134,17 @@ class TgBot:
         else:
             await update.effective_chat.send_message('Whitelist test result is: ' + check_result)
 
-    async def cmd_set_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    async def cmd_set_whitelist_condition(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Set data source for this chat"""
         chat_id = update.effective_message.chat_id
 
         try:
-            self.whitelist.set_whitelist_params(chat_id, context.args)
+            await self.whitelist.set_whitelist_condition(chat_id, ' '.join(context.args))
 
-            if self.permanent:
-                self.permanent.store('locations', self.whitelist.dump())
-
-            await update.effective_chat.send_message('Setting new whitelist')
+            await update.effective_chat.send_message('Setting whitelist condition')
         except Exception as e:
-            await update.effective_chat.send_message(f'Error setting new whitelist: {str(e)} ({type(e)})')
+            await update.effective_chat.send_message(f'Error setting whitelist condition: {str(e)} ({type(e)})')
+
 
     async def cmd_get_option(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Getting bot option for given chat"""
@@ -129,8 +152,6 @@ class TgBot:
 
         try:
             value = self.options.get_option(chat_id, context.args[0])
-            if self.permanent:
-                self.permanent.store('options', self.options.dump())
 
             await update.effective_chat.send_message(f'Option <b>{context.args[0]}</b> value is <b>{value}</b>', parse_mode=ParseMode.HTML)
         except Exception as e:
@@ -142,9 +163,6 @@ class TgBot:
 
         try:
             self.options.set_option(chat_id, context.args[0], context.args[1])
-
-            if self.permanent:
-                self.permanent.store('options', self.options.dump())
 
             await update.effective_chat.send_message(f'Setting option {context.args[0]}')
         except Exception as e:

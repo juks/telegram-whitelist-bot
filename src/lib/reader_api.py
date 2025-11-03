@@ -1,5 +1,6 @@
 import json
 import re
+from lib.params import Params
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -20,6 +21,8 @@ Expected response formats indicating access granted:
 
 class ReaderApi:
     config = {}
+
+    params = {'location': {'type': str}, 'token': {'type': str}}
 
     def __init__(self, config):
         if config:
@@ -70,20 +73,10 @@ class ReaderApi:
 
         return content in ['true', '1', 'yes', 'ok']
 
-    def parse_params(self, args):
-        params = {}
-
-        # <reader type> <whitelist location> [token]
-        for i, p in enumerate([
-            {'name': 'location', 'type': str},
-            {'name': 'token', 'type': str},
-        ]):
-            if len(args) > 1 + i:
-                if p['type'] is int:
-                    params[p['name']] = int(args[1 + i])
-                else:
-                    params[p['name']] = args[1 + i]
-
-        return params
+    def parse_params(self, args, check_missing=True):
+        """Parse named parameters from args array in format parameter_name=parameter_value
+        Uses self.params to determine supported parameters and their types
+        """
+        return Params.parse_params(args, self.params, check_missing)
 
 

@@ -1,14 +1,31 @@
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - 6380:6379
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 10mb --maxmemory-policy noeviction
+    environment:
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+
   telegram-whitelist-bot:
     build:
       context: ./
+    depends_on:
+      - redis
     volumes:
       - data:/data
-    restart: on-failure:10
+    restart: unless-stopped
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - PICKLE_FILE=${PICKLE_FILE}
       - GSA_FILE=${GSA_FILE}
       - DEFAULT_SOURCE=${DEFAULT_SOURCE}
+      - REDIS_HOST=redis
+      - REDIS_PORT=${REDIS_PORT}
+
 volumes:
   data:
+  redis_data:

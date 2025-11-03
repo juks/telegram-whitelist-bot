@@ -1,5 +1,6 @@
 import re
 from urllib.request import urlopen
+from lib.params import Params
 
 """
 Text File Datasource: checks telegram login against a plain text file available by URL.
@@ -8,6 +9,8 @@ Each line should contain one username (with or without leading '@').
 
 class ReaderFile:
     config = {}
+
+    params = {'location': {'type': str}}
 
     def __init__(self, config):
         if config:
@@ -42,21 +45,7 @@ class ReaderFile:
         else:
             return usernames[0:max_count]
 
-    def parse_params(self, args):
-        params = {}
-
-        # <reader type> <whilelist location>
-        for i, p in enumerate([
-            {'name': 'location', 'type': str},
-        ]):
-            if len(args) > 1 + i:
-                if p['type'] is int:
-                    params[p['name']] = int(args[1 + i])
-                else:
-                    params[p['name']] = args[1 + i]
-            elif 'default' in p:
-                params[p['name']] = p['default']
-
-        return params
+    def parse_params(self, args, check_missing=True):
+        return Params.parse_params(args, self.params, check_missing)
 
 
