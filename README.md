@@ -23,19 +23,25 @@ Simple [bot](https://t.me/whitelist_bouncer_bot) that adds whitelist automation 
 
 Available commands:
 
-**/get_whitelist:** Returns the whitelist location for current chat;
+**/get_whitelist**: Returns the whitelist location for current chat (admin only)
 
-**/test_whitelist:** Get whitelist reading (check user Bob in case of API or get first three whitelist entries);
+**/test_whitelist**: Show sample whitelist content (first 3 entries for list readers, or a test result for API) (admin only)
 
-**/set_whitelist &lt;reader type&gt; &lt;location&gt; [params]:** Sets whitelist parameters for current chat;
+**/set_whitelist &lt;reader type&gt; [location=default] [column=1] [sheet=0]**: Sets whitelist parameters for current chat (admin only)
 
-**/get_option &lt;option name&gt;:** Get option value for current chat;
+**/set_whitelist_condition &lt;condition&gt;**: Sets additional condition for gspread reader, e.g. `2 in ("yes", "True")` (admin only)
 
-**/set_option &lt;option name&gt; &lt;option_value&gt;:** Set option value for current chat;
+**/test_user &lt;username&gt;**: Check if a user is allowed into the chat
 
-**/list_options:** List all options;
+**/get_option &lt;option name&gt;**: Get option value for current chat (admin only)
 
-**/help:** Get help.
+**/set_option &lt;option name&gt; &lt;option_value&gt;**: Set option value for current chat (admin only)
+
+**/list_options**: List all options (admin only)
+
+**/start**: Get welcome message
+
+**/help**: Get help
 
 ## Supported whitelist types
 ### • api: remote whitelist available via the HTTP(s) API
@@ -104,23 +110,24 @@ driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com
 ## Project structure
 ```
 telegram-whitelist-bot/
-|-- src/                              - Source code
-|   |-- data.pickle                   - Sample runtime state file for dev/testing
-|   |-- main.py                       - Entry point: parses CLI/env, starts TgBot
-|   |-- lib/                          - Core modules
-|   |   |-- envdefault.py             - argparse action to read defaults from environment
-|   |   |-- options.py                - In-memory options storage and reference/validation
-|   |   |-- permanent.py              - Pickle-based persistence for locations/options
-|   |   |-- reader_file.py            - Reader: usernames from text file by URL
-|   |   |-- reader_gspread.py         - Reader: usernames from Google Sheets
-|   |   |-- reader_api.py             - Reader: single-user check via REST API (Bearer auth)
-|   |   |-- tg_bot.py                 - Telegram bot logic and command handlers
-|   |   `-- whitelist.py              - Reader registry, chat-to-source mapping, access checks
-|   `-- misc/                         - Auxiliary tools and test utilities
-|       `-- test_api.py               - Minimal HTTP server to test ReaderApi
-|-- data.pickle                       - Example persisted state (locations/options)
-|-- docker-compose.yml                - Compose file to run the bot in Docker
-|-- Dockerfile                        - Docker build definition for the bot
-|-- README.md                         - Project overview and usage instructions
-`-- requirements.txt                  - Python dependencies
+|-- src/                                  - Source code
+|   |-- data.pickle                       - Sample runtime state file for dev/testing
+|   |-- main.py                           - Entry point: parses CLI/env, starts TgBot
+|   |-- lib/                              - Core modules
+|   |   |-- envdefault.py                 - argparse action to read defaults from environment
+|   |   |-- options.py                    - Bot options backed by Redis (per chat)
+|   |   |-- permanent.py                  - Pickle persistence (legacy import/migration only)
+|   |   |-- reader_file.py                - Reader: usernames from text file by URL
+|   |   |-- reader_gspread.py             - Reader: usernames from Google Sheets (+conditions)
+|   |   |-- reader_api.py                 - Reader: single-user check via REST API (Bearer auth)
+|   |   |-- whitelist.py                  - Reader registry; chat-to-source mapping backed by Redis
+|   |   |-- params.py                     - Named params and condition parsing helpers
+|   |   |-- redis.py                      - Redis client wrapper
+|   |   `-- tg_bot.py                     - Telegram bot logic and command handlers
+|   `-- misc/                             - Auxiliary tools and test utilities
+|       `-- test_api.py                   - Minimal HTTP server to test ReaderApi
+|-- docker-compose.yml                    - Compose (includes redis service and bot service)
+|-- Dockerfile                            - Docker build definition for the bot
+|-- README.md                             - Project overview and usage instructions
+`-- requirements.txt                      - Python dependencies
 ```
