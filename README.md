@@ -86,6 +86,11 @@ Default source defined in .env:
 DEFAULT_SOURCE=gspread;location=https://docs.google.com/spreadsheets/d/some_id;condition=2 in ("yes", "yeap");sheet=1;column=1
 ```
 
+Or /set_whitelist_condition command:
+```
+/set_whitelist_condition 2 in ("yes", "True")
+```
+
 To use public bot @whitelist_bouncer_bot you need to grant spreadsheet access to serivce accout:
 ```
 driveaccess@telegram-whitelist-bouncer.iam.gserviceaccount.com
