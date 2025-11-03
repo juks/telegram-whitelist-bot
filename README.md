@@ -1,4 +1,4 @@
-# What is it?
+сщт# What is it?
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/4a16ff48-17a4-4235-8ef3-a8ba1fb1f0a6" />
 
 Simple [bot](https://t.me/whitelist_bouncer_bot) that adds whitelist automation to Telegram chats. Those users requests who is listed in chat whitelist will be accepted automatically.
@@ -108,7 +108,6 @@ function Related(rowNumber = 0) {
   var positive = ['yes', 'true'];
 
   for (var i = start; i < values.length; i++) {
-    console.log(String(values[i][conditionColumn]).toLowerCase().trim());
     if (positive.includes(String(values[i][conditionColumn - 1]).toLowerCase().trim())) {
       newValue = values[i][loginColumn - 1].replace(/^@/, '').toLowerCase().trim();
       sheet.getRange(i + rowNumber + offset, outputColumn).setValue(newValue);
