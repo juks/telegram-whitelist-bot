@@ -1,5 +1,4 @@
-from wsgiref.handlers import BaseHandler
-
+from lib.tg_bot_base import TgBotBase
 from lib.whitelist import Whitelist
 from lib.options import Options
 from lib.redis import Redis
@@ -9,21 +8,10 @@ from typing import Optional
 from telegram import Chat, ChatMember, ChatMemberUpdated, Update
 from telegram.constants import ParseMode
 from telegram.constants import ChatMemberStatus
+from telegram.ext import ContextTypes, ChatJoinRequestHandler
 
-from telegram.ext import (
-    Application,
-    ChatJoinRequestHandler,
-    ChatMemberHandler,
-    CommandHandler,
-    ContextTypes,
-)
 
-class TgBot:
-    token = ''
-    app = None
-    logger = None
-    options = None
-    permanent = None
+class TgBot(TgBotBase):
 
     commands = {
         'get_whitelist':    {'args': [], 'description': 'Returns the whitelist location for current chat', 'admin': True},
@@ -40,13 +28,7 @@ class TgBot:
     }
 
     def __init__(self, token, config):
-        logging.basicConfig(
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-        )
-
-        # set higher logging level for httpx to avoid all GET and POST requests being logged
-        logging.getLogger("httpx").setLevel(logging.WARNING)
-        self.logger = logging.getLogger(__name__)
+        super().__init__(token, config, commands=self.commands)
 
         # Initialize Redis client with parameters from config
         redis_host = config.get('redis_host', 'localhost')
@@ -54,9 +36,6 @@ class TgBot:
         redis_client = Redis(host=redis_host, port=redis_port)
 
         self.whitelist = Whitelist(config, self.logger, redis_client=redis_client)
-
-        self.token = token
-        self.app = Application.builder().token(token).build()
 
         self.options = Options({
             'enabled':                      {'type': 'bool', 'description': 'Controls if the bot is active', 'default': True},
@@ -100,27 +79,20 @@ class TgBot:
         """Set data source for this chat"""
         chat_id = update.effective_message.chat_id
 
-        try:
-            self.whitelist.set_whitelist_params(chat_id, context.args)
+        self.whitelist.set_whitelist_params(chat_id, context.args)
 
-            await update.effective_chat.send_message('Setting new whitelist')
-        except Exception as e:
-            await update.effective_chat.send_message(f'Error setting new whitelist: {str(e)} ({type(e)})')
+        await update.effective_chat.send_message('Setting new whitelist')
 
     async def cmd_test_user(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Test if user with given username is allowed"""
         chat_id = update.effective_message.chat_id
 
-        try:
-            result = await self.whitelist.check_allowed_user(chat_id, context.args[0])
+        result = await self.whitelist.check_allowed_user(chat_id, context.args[0])
 
-            if result:
-                await update.effective_chat.send_message(f'User {context.args[0]} is allowed')
-            else:
-                await update.effective_chat.send_message(f'User {context.args[0]} is not allowed')
-
-        except Exception as e:
-            await update.effective_chat.send_message(f'Error checking user: {str(e)} ({type(e)})')
+        if result:
+            await update.effective_chat.send_message(f'User {context.args[0]} is allowed')
+        else:
+            await update.effective_chat.send_message(f'User {context.args[0]} is not allowed')
 
 
     async def cmd_test_whitelist(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -138,35 +110,26 @@ class TgBot:
         """Set data source for this chat"""
         chat_id = update.effective_message.chat_id
 
-        try:
-            await self.whitelist.set_whitelist_condition(chat_id, ' '.join(context.args))
+        await self.whitelist.set_whitelist_condition(chat_id, ' '.join(context.args))
 
-            await update.effective_chat.send_message('Setting whitelist condition')
-        except Exception as e:
-            await update.effective_chat.send_message(f'Error setting whitelist condition: {str(e)} ({type(e)})')
+        await update.effective_chat.send_message('Setting whitelist condition')
 
 
     async def cmd_get_option(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Getting bot option for given chat"""
         chat_id = update.effective_message.chat_id
 
-        try:
-            value = self.options.get_option(chat_id, context.args[0])
+        value = self.options.get_option(chat_id, context.args[0])
 
-            await update.effective_chat.send_message(f'Option <b>{context.args[0]}</b> value is <b>{value}</b>', parse_mode=ParseMode.HTML)
-        except Exception as e:
-            await update.effective_chat.send_message(f'Error getting option value: {str(e)}')
+        await update.effective_chat.send_message(f'Option <b>{context.args[0]}</b> value is <b>{value}</b>', parse_mode=ParseMode.HTML)
 
     async def cmd_set_option(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Setting chat option for given chat"""
         chat_id = update.effective_message.chat_id
 
-        try:
-            self.options.set_option(chat_id, context.args[0], context.args[1])
+        self.options.set_option(chat_id, context.args[0], context.args[1])
 
-            await update.effective_chat.send_message(f'Setting option {context.args[0]}')
-        except Exception as e:
-            await update.effective_chat.send_message(f'Error setting option value: {str(e)}')
+        await update.effective_chat.send_message(f'Setting option {context.args[0]}')
 
     async def cmd_list_options(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """List all options"""
@@ -254,120 +217,10 @@ class TgBot:
         except Exception as e:
             self.logger.error(f'Error processing join request for chat %s: %s (%s)', chat.title, str(e), type(e))
 
-    def extract_status_change(self, chat_member_update: ChatMemberUpdated) -> Optional[tuple[bool, bool]]:
-        """Takes a ChatMemberUpdated instance and extracts whether the 'old_chat_member' was a member
-        of the chat and whether the 'new_chat_member' is a member of the chat. Returns None, if
-        the status didn't change.
-        """
-        status_change = chat_member_update.difference().get("status")
-        old_is_member, new_is_member = chat_member_update.difference().get("is_member", (None, None))
-
-        if status_change is None:
-            return None
-
-        old_status, new_status = status_change
-        was_member = old_status in [
-            ChatMember.MEMBER,
-            ChatMember.OWNER,
-            ChatMember.ADMINISTRATOR,
-        ] or (old_status == ChatMember.RESTRICTED and old_is_member is True)
-        is_member = new_status in [
-            ChatMember.MEMBER,
-            ChatMember.OWNER,
-            ChatMember.ADMINISTRATOR,
-        ] or (new_status == ChatMember.RESTRICTED and new_is_member is True)
-
-        return was_member, is_member
-
-    async def track_chats(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Tracks the chats the bot is in."""
-        result = self.extract_status_change(update.my_chat_member)
-        if result is None:
-            return
-        was_member, is_member = result
-
-        # Let's check who is responsible for the change
-        cause_name = update.effective_user.full_name
-
-        # Handle chat types differently:
-        chat = update.effective_chat
-        if chat.type == Chat.PRIVATE:
-            if not was_member and is_member:
-                # This may not be really needed in practice because most clients will automatically
-                # send a /start command after the user unblocks the bot, and start_private_chat()
-                # will add the user to "user_ids".
-                # We're including this here for the sake of the example.
-                self.logger.info("%s unblocked the bot", cause_name)
-                context.bot_data.setdefault("user_ids", set()).add(chat.id)
-            elif was_member and not is_member:
-                self.logger.info("%s blocked the bot", cause_name)
-                context.bot_data.setdefault("user_ids", set()).discard(chat.id)
-        elif chat.type in [Chat.GROUP, Chat.SUPERGROUP]:
-            if not was_member and is_member:
-                self.logger.info("%s added the bot to the group %s", cause_name, chat.title)
-                context.bot_data.setdefault("group_ids", set()).add(chat.id)
-            elif was_member and not is_member:
-                self.logger.info("%s removed the bot from the group %s", cause_name, chat.title)
-                context.bot_data.setdefaПокult("group_ids", set()).discard(chat.id)
-        elif not was_member and is_member:
-            self.logger.info("%s added the bot to the channel %s", cause_name, chat.title)
-            context.bot_data.setdefault("channel_ids", set()).add(chat.id)
-        elif was_member and not is_member:
-            self.logger.info("%s removed the bot from the channel %s", cause_name, chat.title)
-            context.bot_data.setdefault("channel_ids", set()).discard(chat.id)
-
-    async def common_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Bot commands dispatcher"""
-        user = update.effective_message.from_user
-        message_text = update.effective_message.text
-        chat_id = update.effective_chat.id
-        message_id = update.effective_message.id
-
-        command_with_bot_name = message_text.split(' ')[0]
-        command_name = command_with_bot_name.split('@')[0][1:]
-
-        if command_name not in self.commands:
-            await update.effective_chat.send_message('Unknown command')
-            return
-
-        if 'admin' in self.commands[command_name] and self.commands[command_name]['admin'] is True:
-            if not await self.is_admin(update, user.id):
-                await update.effective_chat.send_message('Only admins can call this command')
-
-                return
-
-        obl_args_count = 0
-
-        if 'args' in self.commands[command_name]:
-            for arg in self.commands[command_name]['args']:
-                parts = arg.split('=')
-
-                if len(parts) == 1:
-                    obl_args_count += 1
-
-        if len(context.args) < obl_args_count:
-            s = 's' if obl_args_count > 1 else ''
-            await update.effective_chat.send_message(f'This command takes at least {obl_args_count} argument{s}')
-            return
-
-        handler = getattr(self, 'cmd_' + command_name)
-
-        if not handler:
-            await update.effective_chat.send_message(f'No handler for command {command_name}')
-
-        await handler(update, context)
-
-        if self.options.get_option(chat_id, 'delete_commands'):
-            await context.bot.delete_message(chat_id, message_id)
-        return
+    # help_message, join_request, cmd_* methods remain here in subclass
 
     def run(self):
-        """Start the bot"""
-        for command in self.commands:
-            self.app.add_handler(CommandHandler(command, self.common_handler))
-
-        # Handle chat join request
-        self.app.add_handler(ChatMemberHandler(self.track_chats, ChatMemberHandler.MY_CHAT_MEMBER))
+        # Register chat join request handler in subclass
         self.app.add_handler(ChatJoinRequestHandler(self.join_request))
-
-        self.app.run_polling(allowed_updates=Update.ALL_TYPES)
+        # Then delegate to base to register commands, tracking, and start polling
+        return super().run()
