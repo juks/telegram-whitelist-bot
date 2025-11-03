@@ -79,8 +79,7 @@ Example whitelist with usernames listed in column 1, sheet 0:
 
 Some column conditions can be implemented using "condition" option:
 
-<img width="300" height="446" alt="image" src="https://github.com/user-attachments/assets/a237f340-690f-43b7-983b-369823220d08" />
-
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/a237f340-690f-43b7-983b-369823220d08" />
 
 Default source defined in .env:
 ```
